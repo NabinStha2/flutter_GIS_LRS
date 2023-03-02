@@ -1,9 +1,9 @@
 import 'package:easy_sidemenu/easy_sidemenu.dart';
 import 'package:flutter/material.dart';
 import 'package:gis_flutter_frontend/core/development/console.dart';
-import 'package:gis_flutter_frontend/pages/add_plygon.dart';
-import 'package:gis_flutter_frontend/pages/dashboard_page.dart';
-import 'package:gis_flutter_frontend/pages/map_page.dart';
+import 'package:gis_flutter_frontend/screens/add_land.dart';
+import 'package:gis_flutter_frontend/screens/dashboard_page.dart';
+import 'package:gis_flutter_frontend/screens/map_page.dart';
 import 'package:gis_flutter_frontend/providers/auth_provider.dart';
 import 'package:gis_flutter_frontend/utils/app_shared_preferences.dart';
 import 'package:gis_flutter_frontend/widgets/custom_text.dart';
@@ -59,67 +59,67 @@ class _SiteLayoutState extends State<SiteLayout> {
         ),
         title: Row(
           children: [
-            CustomText.ourText(
-              "GIS LRS",
-              color: lightGrey,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-            ),
-            const Spacer(),
-            Row(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                        color: Colors.grey.withOpacity(0.7),
-                      ),
-                      borderRadius: BorderRadius.circular(8)),
-                  width: 200,
-                  height: 50,
-                  child: CustomTextFormField(
-                    controller: searchController,
-                    hintText: "Search by Parcel id or location..",
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.search,
-                    color: dark.withOpacity(.7),
-                  ),
-                  splashRadius: 10,
-                  onPressed: () {},
-                ),
-              ],
-            ),
-            Stack(
-              children: [
-                IconButton(
-                    icon: Icon(
-                      Icons.notifications,
-                      color: dark.withOpacity(.7),
-                    ),
-                    splashRadius: 10,
-                    onPressed: () {}),
-                Positioned(
-                  top: 7,
-                  right: 7,
-                  child: Container(
-                    width: 12,
-                    height: 12,
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(color: active, borderRadius: BorderRadius.circular(30), border: Border.all(color: light, width: 2)),
-                  ),
-                )
-              ],
-            ),
-            Container(
-              width: 1,
-              height: 22,
-              color: lightGrey,
-            ),
-            const SizedBox(
-              width: 24,
-            ),
+            // CustomText.ourText(
+            //   "GIS LRS",
+            //   color: lightGrey,
+            //   fontSize: 20,
+            //   fontWeight: FontWeight.bold,
+            // ),
+            // const Spacer(),
+            // Row(
+            //   children: [
+            //     Container(
+            //       decoration: BoxDecoration(
+            //           border: Border.all(
+            //             color: Colors.grey.withOpacity(0.7),
+            //           ),
+            //           borderRadius: BorderRadius.circular(8)),
+            //       width: 200,
+            //       height: 50,
+            //       child: CustomTextFormField(
+            //         controller: searchController,
+            //         hintText: "Search by Parcel id or location..",
+            //       ),
+            //     ),
+            //     IconButton(
+            //       icon: Icon(
+            //         Icons.search,
+            //         color: dark.withOpacity(.7),
+            //       ),
+            //       splashRadius: 10,
+            //       onPressed: () {},
+            //     ),
+            //   ],
+            // ),
+            // Stack(
+            //   children: [
+            //     IconButton(
+            //         icon: Icon(
+            //           Icons.notifications,
+            //           color: dark.withOpacity(.7),
+            //         ),
+            //         splashRadius: 10,
+            //         onPressed: () {}),
+            //     Positioned(
+            //       top: 7,
+            //       right: 7,
+            //       child: Container(
+            //         width: 12,
+            //         height: 12,
+            //         padding: const EdgeInsets.all(4),
+            //         decoration: BoxDecoration(color: active, borderRadius: BorderRadius.circular(30), border: Border.all(color: light, width: 2)),
+            //       ),
+            //     )
+            //   ],
+            // ),
+            // Container(
+            //   width: 1,
+            //   height: 22,
+            //   color: lightGrey,
+            // ),
+            // const SizedBox(
+            //   width: 24,
+            // ),
             Consumer<AuthProvider>(
               builder: (context, _, child) => MouseRegion(
                 cursor: SystemMouseCursors.click,
@@ -213,7 +213,7 @@ class _SiteLayoutState extends State<SiteLayout> {
               children: const [
                 DashboardPage(),
                 MapPage(),
-                AddPolygon(),
+                AddLandScreen(),
               ],
             ),
           ),

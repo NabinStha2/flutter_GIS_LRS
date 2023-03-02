@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 import 'custom_text.dart';
@@ -82,6 +81,7 @@ class CustomButton {
       child: TextButton(
         style: TextButton.styleFrom(
           foregroundColor: foregroundColor,
+          backgroundColor: color,
           shape: RoundedRectangleBorder(
               side: isBorder && !isDisable
                   ? BorderSide(color: color ?? Colors.grey)

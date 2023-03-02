@@ -7,7 +7,8 @@ const double appBarActionWidgetWidth = 22.0;
 const double appBarDraweHeight = 29.0;
 
 const double kIconHeight = 17.0;
-const double screenPadding = 15.0;
+const EdgeInsets screenPadding = EdgeInsets.all(16.0);
+const EdgeInsets screenLeftRightPadding = EdgeInsets.symmetric(horizontal: 24.0);
 
 const double hBox0 = 5.0;
 const double hBox1 = 10.0;

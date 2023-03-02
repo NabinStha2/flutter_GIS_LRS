@@ -8,7 +8,8 @@ import '../widgets/custom_dialogs.dart';
 import 'api_exceptions.dart';
 
 mixin BaseController {
-  customApiExceptionHandleDialog({required String? message, required BuildContext ctx}) {
+  customApiExceptionHandleDialog(
+      {required String? message, required BuildContext ctx}) {
     CustomDialogs.confirmDialog(ctx, onOk: () {
       back(ctx);
     });
@@ -16,7 +17,8 @@ mixin BaseController {
 
   void handleError(error) {
     consolelog("HandleError: $error");
-    BuildContext globalContext = GlobalContextService.globalContext.currentContext!;
+    BuildContext globalContext =
+        GlobalContextService.globalContext.currentContext!;
     if (isNavigatorCanPop(globalContext)) {
       hideLoading(globalContext);
     }
@@ -25,21 +27,26 @@ mixin BaseController {
       // var message = error.message;
       // customApiExceptionHandleDialog(message: message, ctx: globalContext);
       errorToast(msg: error.message ?? "");
+      throw error;
     } else if (error is FetchDataException) {
       // var message = error.message;
       // customApiExceptionHandleDialog(message: message, ctx: globalContext);
       errorToast(msg: error.message ?? "");
+      throw error;
     } else if (error is UnAuthorizedException) {
       // var message = error.message;
       // customApiExceptionHandleDialog(message: message, ctx: globalContext);
       errorToast(msg: error.message ?? "");
+      throw error;
     } else if (error is ApiNotRespondingException) {
       // var message = error.message;
       // customApiExceptionHandleDialog(message: message, ctx: globalContext);
       errorToast(msg: error.message ?? "");
+      throw error;
     } else {
       consolelog("something went wrong");
       errorToast(msg: "something went wrong");
+      throw error;
       // CustomDialogs.confirmDialog(
       //   navigat,
       //   onOk: () {

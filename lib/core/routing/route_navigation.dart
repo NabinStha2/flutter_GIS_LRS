@@ -1,31 +1,45 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 
 back(BuildContext context, [dynamic result]) {
-  GoRouter.of(context).pop(result);
+  Navigator.pop(context, result);
 }
 
-navigate(BuildContext context, dynamic routeName, {List<Object?>? extra}) {
-  GoRouter.of(context).push(routeName, extra: extra);
+navigate(BuildContext context, dynamic pageRoute, {bool isFullDialog = false}) {
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: ((context) => pageRoute), fullscreenDialog: isFullDialog));
 }
 
-navigateNamed(BuildContext context, String routeName,
-    {params = const <String, String>{},
-    queryParams = const <String, String>{},
-    dynamic extra}) {
-
-  GoRouter.of(context).pushNamed(routeName,
-      params: params, queryParams: queryParams, extra: extra);
+navigateNamed(BuildContext context, String routeName, {dynamic arguments}) {
+  Navigator.pushNamed(
+    context,
+    routeName,
+    arguments: arguments,
+  );
 }
 
-navigateOffAllNamed(BuildContext context, String routeName,
-    {params = const <String, String>{},
-    queryParams = const <String, String>{},
-    dynamic extra}) {
-  GoRouter.of(context).goNamed(routeName,
-      params: params, queryParams: queryParams, extra: extra);
+navigateAsyncNamed(BuildContext context, String routeName,
+    {dynamic arguments, Function()? returnBackFunction}) async {
+  bool? value =
+      await Navigator.pushNamed(context, routeName, arguments: arguments);
+  if (value == true) returnBackFunction;
 }
 
-replaceAndPush(BuildContext context, dynamic routeName, {dynamic extra}) {
-  GoRouter.of(context).pushReplacement(routeName, extra: extra);
+navigateOffAllNamed(BuildContext context, String routeName, {Object? args}) {
+  Navigator.pushNamedAndRemoveUntil(
+    context,
+    routeName,
+    (route) => false,
+    arguments: args,
+  );
+}
+
+replaceAndPush(BuildContext context, Widget page) {
+  Navigator.pushReplacement(
+    context,
+    MaterialPageRoute(
+      builder: ((context) => page),
+    ),
+  );
 }

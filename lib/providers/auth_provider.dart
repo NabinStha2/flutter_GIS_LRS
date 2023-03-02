@@ -3,9 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:gis_flutter_frontend/core/routing/route_name.dart';
 
+import '../core/app/enums.dart';
 import '../core/config/api_config.dart';
 import '../core/development/console.dart';
-import '../core/enums.dart';
 import '../core/routing/route_navigation.dart';
 import '../model/login/login_response_model.dart';
 import '../services/base_client.dart';
@@ -53,7 +53,7 @@ class AuthProvider extends ChangeNotifier with BaseController {
       clearLoginBodyTextFieldValue();
       unfocusKeyboard(ctx);
       hideLoading(ctx);
-      navigateOffAllNamed(ctx, RouteName.rootRoute);
+      navigateOffAllNamed(ctx, RouteName.dashboardRouteName);
       isLoggedIn = true;
       notifyListeners();
       successToast(msg: loginResponseModel.message);

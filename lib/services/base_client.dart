@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 import 'package:gis_flutter_frontend/utils/text_capitalization.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
-import 'package:image_picker/image_picker.dart';
 import '../core/development/console.dart';
 import '../utils/app_shared_preferences.dart';
 import 'api_exceptions.dart';
@@ -15,10 +14,14 @@ class BaseClient {
   static const int timeOutDuration = 20;
   var client = http.Client();
 
-  final Map<String, String> _headers = {'Content-type': 'application/json', 'Accept': 'application/json'};
+  final Map<String, String> _headers = {
+    'Content-type': 'application/json',
+    'Accept': 'application/json'
+  };
 
   //DELETE
-  Future<dynamic> delete(String baseUrl, String api, {bool hasTokenHeader = true, dynamic payloadObj}) async {
+  Future<dynamic> delete(String baseUrl, String api,
+      {bool hasTokenHeader = true, dynamic payloadObj}) async {
     var uri = Uri.parse(baseUrl + api);
     var payload = json.encode(payloadObj ?? {});
     try {
@@ -28,7 +31,8 @@ class BaseClient {
             body: payload,
             headers: hasTokenHeader
                 ? {
-                    HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+                    HttpHeaders.authorizationHeader:
+                        "Bearer ${AppSharedPreferences.getAuthToken}",
                     'Content-type': 'application/json',
                     'Accept': 'application/json'
                   }
@@ -36,16 +40,19 @@ class BaseClient {
           )
           .timeout(const Duration(seconds: timeOutDuration));
 
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('Something went wrong, Try again', uri.toString());
+      throw ApiNotRespondingException(
+          'Something went wrong, Try again', uri.toString());
     }
   }
 
   //GET
-  Future<dynamic> get(String baseUrl, String api, {bool hasTokenHeader = true}) async {
+  Future<dynamic> get(String baseUrl, String api,
+      {bool hasTokenHeader = true}) async {
     var uri = Uri.parse(baseUrl + api);
     try {
       var response = await http
@@ -53,24 +60,29 @@ class BaseClient {
             uri,
             headers: hasTokenHeader
                 ? {
-                    HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+                    HttpHeaders.authorizationHeader:
+                        "Bearer ${AppSharedPreferences.getAuthToken}",
                     'Content-type': 'application/json',
                     'Accept': 'application/json'
                   }
                 : _headers,
           )
           .timeout(const Duration(seconds: timeOutDuration));
+
+      consolelog(uri);
       // consolelog(response);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('Something went wrong, Try again', uri.toString());
+      throw ApiNotRespondingException(
+          'Something went wrong, Try again', uri.toString());
     }
   }
 
 //PATCH
-  Future<dynamic> patch(String baseUrl, String api, Map payloadObj, {bool hasTokenHeader = true}) async {
+  Future<dynamic> patch(String baseUrl, String api, Map payloadObj,
+      {bool hasTokenHeader = true}) async {
     var uri = Uri.parse(baseUrl + api);
     var payload = json.encode(payloadObj);
 
@@ -81,23 +93,28 @@ class BaseClient {
             body: payload,
             headers: hasTokenHeader
                 ? {
-                    HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+                    HttpHeaders.authorizationHeader:
+                        "Bearer ${AppSharedPreferences.getAuthToken}",
                     'Content-type': 'application/json',
                     'Accept': 'application/json'
                   }
                 : _headers,
           )
           .timeout(const Duration(seconds: timeOutDuration));
+
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('API not responding in time', uri.toString());
+      throw ApiNotRespondingException(
+          'API not responding in time', uri.toString());
     }
   }
 
 //POST
-  Future<dynamic> post(String baseUrl, String api, dynamic payloadObj, {bool hasTokenHeader = true}) async {
+  Future<dynamic> post(String baseUrl, String api, dynamic payloadObj,
+      {bool hasTokenHeader = true}) async {
     var uri = Uri.parse(baseUrl + api);
     var payload = json.encode(payloadObj);
 
@@ -108,18 +125,22 @@ class BaseClient {
             body: payload,
             headers: hasTokenHeader
                 ? {
-                    HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+                    HttpHeaders.authorizationHeader:
+                        "Bearer ${AppSharedPreferences.getAuthToken}",
                     'Content-type': 'application/json',
                     'Accept': 'application/json'
                   }
                 : _headers,
           )
           .timeout(const Duration(seconds: timeOutDuration));
+
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet Connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('API not responded in time', uri.toString());
+      throw ApiNotRespondingException(
+          'API not responded in time', uri.toString());
     }
   }
 
@@ -177,7 +198,7 @@ class BaseClient {
   Future<dynamic> postWithImage(String baseUrl, String api,
       {Map<String, String>? payloadObj,
       List<File>? imgFiles,
-      XFile? file,
+      File? file,
       Uint8List? uint8File,
       String method = 'POST',
       String? imageKey,
@@ -189,7 +210,8 @@ class BaseClient {
       var request = http.MultipartRequest(method, uri);
       request.headers.addAll(hasTokenHeader
           ? {
-              HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+              HttpHeaders.authorizationHeader:
+                  "Bearer ${AppSharedPreferences.getAuthToken}",
               'Content-type': 'application/json',
               'Accept': 'application/json'
             }
@@ -197,11 +219,9 @@ class BaseClient {
 
       if (file != null) {
         request.files.add(
-          http.MultipartFile.fromBytes(
+          await http.MultipartFile.fromPath(
             "$imageKey",
-            await file.readAsBytes().then((value) {
-              return value.cast();
-            }),
+            file.path,
             contentType: MediaType(
               'image',
               'jpg',
@@ -252,15 +272,18 @@ class BaseClient {
       var data = await request.send();
       var response = await http.Response.fromStream(data);
 
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('Something went wrong, Try again', uri.toString());
+      throw ApiNotRespondingException(
+          'Something went wrong, Try again', uri.toString());
     }
   }
 
-  Future<dynamic> put(String baseUrl, String api, dynamic payloadObj, {bool hasTokenHeader = true}) async {
+  Future<dynamic> put(String baseUrl, String api, dynamic payloadObj,
+      {bool hasTokenHeader = true}) async {
     var uri = Uri.parse(baseUrl + api);
     var payload = json.encode(payloadObj);
     try {
@@ -270,18 +293,22 @@ class BaseClient {
             body: payload,
             headers: hasTokenHeader
                 ? {
-                    HttpHeaders.authorizationHeader: "Bearer ${AppSharedPreferences.getAuthToken}",
+                    HttpHeaders.authorizationHeader:
+                        "Bearer ${AppSharedPreferences.getAuthToken}",
                     'Content-type': 'application/json',
                     'Accept': 'application/json'
                   }
                 : _headers,
           )
           .timeout(const Duration(seconds: timeOutDuration));
+
+      consolelog(uri);
       return _processResponse(response);
     } on SocketException {
       throw FetchDataException('No Internet connection', uri.toString());
     } on TimeoutException {
-      throw ApiNotRespondingException('Something went wrong, Try again', uri.toString());
+      throw ApiNotRespondingException(
+          'Something went wrong, Try again', uri.toString());
     }
   }
 
@@ -296,16 +323,24 @@ class BaseClient {
         return responseJson;
       case 400:
         throw BadRequestException(
-            (json.decode(response.body)["error"] ?? "Something went wrong").toString().toCapitalized(), response.request!.url.toString());
+            (json.decode(response.body)["error"] ?? "Something went wrong")
+                .toString()
+                .toCapitalized(),
+            response.request!.url.toString());
       case 401:
       case 403:
-        throw UnAuthorizedException(json.decode(response.body)["error"] ?? "Something went wrong", response.request!.url.toString());
+        throw UnAuthorizedException(
+            json.decode(response.body)["error"] ?? "Something went wrong",
+            response.request!.url.toString());
       case 422:
-        throw ApiNotRespondingException(json.decode(response.body)["error"] ?? "Something went wrong", response.request!.url.toString());
+        throw ApiNotRespondingException(
+            json.decode(response.body)["error"] ?? "Something went wrong",
+            response.request!.url.toString());
       case 500:
       default:
         throw FetchDataException(
-          json.decode(response.body)["error"] ?? 'Server cannot handled this error',
+          json.decode(response.body)["error"] ??
+              'Server cannot handled this error',
           response.request?.url.toString(),
         );
     }

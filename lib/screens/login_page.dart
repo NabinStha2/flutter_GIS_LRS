@@ -5,7 +5,7 @@ import 'package:gis_flutter_frontend/widgets/custom_text_form_field.dart';
 import 'package:provider/provider.dart';
 
 import '../core/config/regex_config.dart';
-import '../core/dimensions/dimensions.dart';
+import '../core/app/dimensions.dart';
 import '../providers/auth_provider.dart';
 import '../widgets/custom_button.dart';
 
@@ -37,7 +37,6 @@ class LoginPage extends StatelessWidget {
                   vSizedBox1,
                   CustomTextFormField(
                     labelText: "Email",
-                    fullNameString: true,
                     hintText: "Email",
                     controller: _.loginEmailController,
                     validator: (val) => val.toString().isEmptyData()
@@ -63,7 +62,9 @@ class LoginPage extends StatelessWidget {
                         _.loginHideShowPass();
                       },
                       splashRadius: 20,
-                      icon: _.isHideLoginPassword ? const Icon(Icons.visibility_off_outlined) : const Icon(Icons.visibility_outlined),
+                      icon: _.isHideLoginPassword
+                          ? const Icon(Icons.visibility_off_outlined)
+                          : const Icon(Icons.visibility_outlined),
                     ),
                     validator: (val) {
                       if (val.toString().isEmptyData()) {

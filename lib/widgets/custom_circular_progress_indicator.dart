@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/dimensions/dimensions.dart';
+import '../core/app/dimensions.dart';
 import 'custom_text.dart';
 
 class CustomCircularProgressIndicatorWidget extends StatelessWidget {

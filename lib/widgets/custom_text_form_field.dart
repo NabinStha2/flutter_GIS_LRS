@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+
+import '../core/config/regex_config.dart';
 
 class CustomTextFormField extends StatelessWidget {
   TextEditingController? controller;
@@ -82,19 +85,25 @@ class CustomTextFormField extends StatelessWidget {
         fontFamily: "Outfit",
         fontWeight: FontWeight.w400,
       ),
-      // inputFormatters: onlyNumber
-      //     ? [
-      //         FilteringTextInputFormatter.allow(RegexConfig.numberRegex),
-      //       ]
-      //     : onlyText
-      //         ? [
-      //             FilteringTextInputFormatter.allow(RegexConfig.textRegex),
-      //           ]
-      //         : searchString
-      //             ? [FilteringTextInputFormatter.allow(RegexConfig.searchRegrex)]
-      //             : fullNameString
-      //                 ? [FilteringTextInputFormatter.allow(RegexConfig.fullNameTextRegrex)]
-      //                 : [],
+      inputFormatters: onlyNumber
+          ? [
+              FilteringTextInputFormatter.allow(RegexConfig.numberRegex),
+            ]
+          : onlyText
+              ? [
+                  FilteringTextInputFormatter.allow(RegexConfig.textRegex),
+                ]
+              : searchString
+                  ? [
+                      FilteringTextInputFormatter.allow(
+                          RegexConfig.searchRegrex)
+                    ]
+                  : fullNameString
+                      ? [
+                          FilteringTextInputFormatter.allow(
+                              RegexConfig.fullNameTextRegrex)
+                        ]
+                      : [],
       readOnly: readOnly,
       initialValue: initialValue,
       enabled: isEnabled,

@@ -9,8 +9,13 @@ class RouteName {
 
   static const dashboardRouteName = "Dashboard";
   static const dashboardRoute = "dashboard";
-  static const addPolygonRouteName = "AddPolygon";
-  static const addPolygonRoute = "/addPolygon";
+
+  static const addLandRouteName = "AddLand";
+  static const addLandRoute = "/addLand";
+
+  static const landRouteName = "Land";
+  static const landRoute = "/land";
+
   static const editProfileRouteName = "EditProfile";
   static const editProfileRoute = "editProfile";
 }

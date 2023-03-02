@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:gis_flutter_frontend/core/routing/route_navigation.dart';
-import '../core/dimensions/dimensions.dart';
+import '../core/app/dimensions.dart';
 import 'custom_button.dart';
 import 'custom_text.dart';
 

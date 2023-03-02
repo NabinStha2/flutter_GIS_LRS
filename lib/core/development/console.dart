@@ -2,7 +2,8 @@ import 'dart:developer';
 import 'package:logger/logger.dart';
 import 'package:flutter/foundation.dart';
 
-import '../enums.dart';
+import '../app/enums.dart';
+
 
 console(var data) {
   if (kDebugMode) {
