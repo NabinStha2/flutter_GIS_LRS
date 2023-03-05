@@ -5,6 +5,7 @@ import 'package:gis_flutter_frontend/screens/dashboard_page.dart';
 import 'package:gis_flutter_frontend/screens/land_screen.dart';
 import 'package:gis_flutter_frontend/screens/login_page.dart';
 import 'package:gis_flutter_frontend/screens/map_page.dart';
+import 'package:gis_flutter_frontend/screens/search_land.dart';
 
 import '../../screens/edit_profile_page.dart';
 
@@ -33,6 +34,9 @@ class RouteGenerator {
 
       case RouteName.mapPageRouteName:
         return MaterialPageRoute(builder: (_) => const MapPage());
+
+      case RouteName.searchLandRouteName:
+        return MaterialPageRoute(builder: (_) => const SearchLandScreen());
     }
     return null;
   }

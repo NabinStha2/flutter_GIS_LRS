@@ -53,6 +53,8 @@ class UserProvider extends ChangeNotifier with BaseController {
       isLoading = false;
       notifyListeners();
     } catch (e) {
+      isLoading = false;
+      notifyListeners();
       consolelog(e.toString());
     }
   }
@@ -86,6 +88,8 @@ class UserProvider extends ChangeNotifier with BaseController {
       back(context);
       notifyListeners();
     } catch (e) {
+      isLoading = false;
+      notifyListeners();
       consolelog(e.toString());
     }
   }
@@ -123,6 +127,8 @@ class UserProvider extends ChangeNotifier with BaseController {
       hideLoading(context);
       notifyListeners();
     } catch (e) {
+      isLoading = false;
+      notifyListeners();
       consolelog(e.toString());
     }
   }

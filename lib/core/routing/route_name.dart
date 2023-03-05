@@ -18,4 +18,7 @@ class RouteName {
 
   static const editProfileRouteName = "EditProfile";
   static const editProfileRoute = "editProfile";
+
+  static const searchLandRouteName = "SearchLand";
+  static const searchLandRoute = "/searchLand";
 }

@@ -1,5 +1,5 @@
 class ApiConfig {
-  static const String localhost = "http://192.168.1.85:5000";
+  static const String localhost = "http://192.168.1.80:5000";
   static const String devServerUrl =
       "https://gis-land-registration-system.vercel.app";
   static const String apiUrl = "/api";
@@ -15,4 +15,5 @@ class ApiConfig {
 
   static const String landUrl = "/land";
   static const String addLandUrl = "/add-land";
+   static const String userLandsUrl = "/user-lands";
 }

@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -25,6 +26,7 @@ class CustomTextFormField extends StatelessWidget {
   IconData? prefixIcon;
   Function()? onTap;
   Function? onChanged;
+  Function? onFieldSubmitted;
   String? initialValue;
   bool? isFromSearch;
   bool? autoFocus;
@@ -56,6 +58,7 @@ class CustomTextFormField extends StatelessWidget {
     this.prefixIcon,
     this.onTap,
     this.onChanged,
+    this.onFieldSubmitted,
     this.initialValue,
     this.isFromSearch = false,
     this.autoFocus = false,
@@ -108,9 +111,10 @@ class CustomTextFormField extends StatelessWidget {
       initialValue: initialValue,
       enabled: isEnabled,
       onTap: onTap,
-      onChanged: (val) => isFromSearch == true ? onChanged!(val) : null,
+      // onChanged: (val) => isFromSearch == true ? onChanged!(val) : null,
       autovalidateMode: autovalidateMode ?? AutovalidateMode.onUserInteraction,
       controller: controller,
+      onFieldSubmitted: (val) => isFromSearch == true ? onFieldSubmitted!(val) : null,
       keyboardType: textInputType,
       obscureText: obscureText,
       decoration: InputDecoration(
