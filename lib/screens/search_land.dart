@@ -7,9 +7,10 @@ import '../core/app/colors.dart';
 import '../model/land/land_request_model.dart';
 import '../providers/land_provider.dart';
 import '../widgets/custom_circular_progress_indicator.dart';
-import '../widgets/custom_network_image_widget.dart';
 import '../widgets/custom_text.dart';
 import '../widgets/drawer_widget.dart';
+import '../widgets/filter_drawer_widget.dart';
+import '../widgets/land_card_widget.dart';
 import 'dashboard_page.dart';
 
 class SearchLandScreen extends StatefulWidget {
@@ -20,27 +21,39 @@ class SearchLandScreen extends StatefulWidget {
 }
 
 class _SearchLandScreenState extends State<SearchLandScreen> {
+  final GlobalKey<ScaffoldState> _key = GlobalKey();
+
   @override
   void initState() {
     super.initState();
-
-    Provider.of<LandProvider>(context, listen: false).getAllSearchLands(
-        context: context,
-        landRequestModel: LandRequestModel(
-          page: 1,
-        ));
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<LandProvider>(context, listen: false).getAllSearchLands(
+          context: context,
+          landRequestModel: LandRequestModel(
+            page: 1,
+          ));
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: CustomText.ourText("Search Land"),
+          title: CustomText.ourText(
+            "Search Land",
+            fontSize: 18,
+            fontWeight: FontWeight.w600,
+          ),
+          centerTitle: true,
+          actions: <Widget>[Container()],
         ),
         drawerEdgeDragWidth: 150,
+        key: _key,
         drawer: DrawerWidget(
           scKey: scKey,
         ),
+        endDrawer: const FilterDrawerWidget(),
+        endDrawerEnableOpenDragGesture: false,
         body: Consumer<LandProvider>(
           builder: (context, _, child) => Padding(
             padding: screenLeftRightPadding,
@@ -49,18 +62,59 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                 CustomTextFormField(
                   hintText: "Search land by parcel Id...",
                   controller: _.searchLandController,
-                  suffix: Icon(Icons.search),
+                  suffix: const Icon(Icons.search),
                   onlyNumber: true,
                   isFromSearch: true,
+                  textInputType: TextInputType.number,
                   onFieldSubmitted: (val) {
                     _.getAllSearchLands(
                         context: context,
                         landRequestModel: LandRequestModel(
                           page: 1,
                           search: val.trim(),
+                          city: _.filterCityLandController.text.trim(),
+                          district: _.filterDistrictLandController.text.trim(),
+                          province: _.filterProvinceLandController.text.trim(),
                         ));
                   },
                 ),
+                vSizedBox0,
+                Row(
+                  children: [
+                    Expanded(child: Container()),
+                    Expanded(
+                      child: GestureDetector(
+                        onTap: () {
+                          _key.currentState?.openEndDrawer();
+                        },
+                        child: Container(
+                          height: 50,
+                          padding: const EdgeInsets.all(10.0),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.0),
+                            color: AppColors.kPrimaryButtonBackgroundColor,
+                            border: Border.all(
+                              color: AppColors.kBorderColor,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              CustomText.ourText(
+                                "Filter By",
+                                fontSize: 16.0,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              hSizedBox1,
+                              const Icon(Icons.filter_alt),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                vSizedBox0,
                 Expanded(
                   child: _.isLoading
                       ? const CustomCircularProgressIndicatorWidget(
@@ -88,12 +142,21 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                                 1 <=
                                             _.paginatedAllSearchLandResultTotalPages) {
                                       _.getAllSearchLands(
-                                          context: context,
-                                          landRequestModel: LandRequestModel(
-                                            page:
-                                                _.paginatedAllSearchLandResultPageNumber +
-                                                    1,
-                                          ));
+                                        context: context,
+                                        landRequestModel: LandRequestModel(
+                                          page:
+                                              _.paginatedAllSearchLandResultPageNumber +
+                                                  1,
+                                          city: _.filterCityLandController.text
+                                              .trim(),
+                                          district: _
+                                              .filterDistrictLandController.text
+                                              .trim(),
+                                          province: _
+                                              .filterProvinceLandController.text
+                                              .trim(),
+                                        ),
+                                      );
                                     }
                                     return true;
                                   },
@@ -105,6 +168,17 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                           landRequestModel: LandRequestModel(
                                             page: 1,
                                             search: _.searchLandController.text
+                                                .trim(),
+                                            city: _
+                                                .filterCityLandController.text
+                                                .trim(),
+                                            district: _
+                                                .filterDistrictLandController
+                                                .text
+                                                .trim(),
+                                            province: _
+                                                .filterProvinceLandController
+                                                .text
                                                 .trim(),
                                           ));
                                       await Future.delayed(
@@ -127,60 +201,10 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                                         ?.length ??
                                                     0,
                                             itemBuilder: (context, index) {
-                                              return Container(
-                                                padding:
-                                                    const EdgeInsets.all(16.0),
-                                                decoration: BoxDecoration(
-                                                  color: AppColors
-                                                      .kContainerShadeColor,
-                                                  border: Border.all(
-                                                      color: AppColors
-                                                          .kBorderColor),
-                                                  borderRadius:
-                                                      BorderRadius.circular(16),
-                                                ),
-                                                child: Row(
-                                                  crossAxisAlignment:
-                                                      CrossAxisAlignment.start,
-                                                  children: [
-                                                    const CustomNetworkImage(
-                                                      imageUrl:
-                                                          "https://img.freepik.com/free-vector/image-upload-concept-illustration_23-2148276163.jpg?size=338&ext=jpg",
-                                                    ),
-                                                    hSizedBox2,
-                                                    Expanded(
-                                                      child: Column(
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .start,
-                                                        children: [
-                                                          CustomText.ourText(_
-                                                              .paginatedAllSearchLandResult?[
-                                                                  index]
-                                                              .district),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "Id: ${_.paginatedAllSearchLandResult?[index].ownerUserId}"),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "Parcel Id: ${_.paginatedAllSearchLandResult?[index].parcelId}"),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "Area: ${_.paginatedAllSearchLandResult?[index].area}"),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "Location: ${_.paginatedAllSearchLandResult?[index].address}, ${_.paginatedAllSearchLandResult?[index].city}"),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "Price: NPR. ${_.paginatedAllSearchLandResult?[index].landPrice}"),
-                                                          vSizedBox1,
-                                                          CustomText.ourText(
-                                                              "status: ${_.paginatedAllSearchLandResult?[index].isVerified}"),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ],
-                                                ),
+                                              return LandCardWidget(
+                                                landResult:
+                                                    _.paginatedAllSearchLandResult?[
+                                                        index],
                                               );
                                             },
                                           ),

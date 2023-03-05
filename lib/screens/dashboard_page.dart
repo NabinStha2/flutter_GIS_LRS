@@ -32,7 +32,12 @@ class _DashboardPageState extends State<DashboardPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: CustomText.ourText("Dashboard"),
+        title: CustomText.ourText(
+          "Dashboard",
+          fontSize: 18,
+          fontWeight: FontWeight.w600,
+        ),
+        centerTitle: true,
       ),
       drawerEdgeDragWidth: 150,
       drawerEnableOpenDragGesture: true,

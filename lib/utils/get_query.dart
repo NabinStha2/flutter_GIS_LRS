@@ -7,7 +7,7 @@ String? getQuery(
   if (reqData?.limit != null) {
     fullquery += "limit=${reqData?.limit}";
   } else {
-    fullquery += "limit=3";
+    fullquery += "limit=20";
   }
   if (reqData?.page != null) {
     fullquery += "&page=${reqData?.page}";
@@ -19,6 +19,15 @@ String? getQuery(
   }
   if (search != null) {
     fullquery += "&search=$search";
+  }
+  if (reqData?.city != "" && reqData?.city != null) {
+    fullquery += "&city=${reqData?.city}";
+  }
+  if (reqData?.district != "" && reqData?.district != null) {
+    fullquery += "&district=${reqData?.district}";
+  }
+  if (reqData?.province != "" && reqData?.province != null) {
+    fullquery += "&province=${reqData?.province}";
   }
 
   return fullquery == '?' ? '' : fullquery;

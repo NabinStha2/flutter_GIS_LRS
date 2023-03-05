@@ -17,7 +17,10 @@ import '../widgets/custom_dialogs.dart';
 
 class AuthProvider extends ChangeNotifier with BaseController {
   var loginResponseModel = LoginResponseModel();
-  bool isLoggedIn = AppSharedPreferences.getAuthToken != null && AppSharedPreferences.getAuthToken != "" ? true : false;
+  bool isLoggedIn = AppSharedPreferences.getAuthToken != null &&
+          AppSharedPreferences.getAuthToken != ""
+      ? true
+      : false;
   bool isHideLoginPassword = true;
   TextEditingController loginEmailController = TextEditingController();
   TextEditingController loginPasswordController = TextEditingController();
@@ -36,19 +39,25 @@ class AuthProvider extends ChangeNotifier with BaseController {
     loginPasswordController.clear();
   }
 
-  login({required BuildContext ctx, required String? userEmail, required String? userPassword}) async {
+  login(
+      {required BuildContext ctx,
+      required String? userEmail,
+      required String? userPassword}) async {
     try {
       Map data = {
         "email": userEmail?.trim(),
         "password": userPassword,
       };
       CustomDialogs.fullLoadingDialog(data: "Logging", context: ctx);
-      var response =
-          await BaseClient().post(ApiConfig.baseUrl, ApiConfig.userUrl + ApiConfig.loginUrl, data, hasTokenHeader: false).catchError(handleError);
+      var response = await BaseClient()
+          .post(ApiConfig.baseUrl, ApiConfig.userUrl + ApiConfig.loginUrl, data,
+              hasTokenHeader: false)
+          .catchError(handleError);
       if (response == null) return null;
       loginResponseModel = loginResponseModelFromJson(response);
       AppSharedPreferences.setAuthToken(loginResponseModel.data?.token ?? "");
-      AppSharedPreferences.setUserId(loginResponseModel.data?.userData?.id ?? "");
+      AppSharedPreferences.setUserId(
+          loginResponseModel.data?.userData?.id ?? "");
       AppSharedPreferences.setRememberMe(true);
       clearLoginBodyTextFieldValue();
       unfocusKeyboard(ctx);
@@ -60,7 +69,6 @@ class AuthProvider extends ChangeNotifier with BaseController {
     } catch (e) {
       logger(e.toString(), loggerType: LoggerType.error);
       errorToast(msg: e.toString());
-      hideLoading(ctx);
     }
   }
 

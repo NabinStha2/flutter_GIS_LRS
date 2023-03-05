@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:gis_flutter_frontend/providers/auth_provider.dart';
+import 'package:gis_flutter_frontend/providers/drawer_provider.dart';
 import 'package:gis_flutter_frontend/providers/land_provider.dart';
 import 'package:gis_flutter_frontend/providers/map_provider.dart';
 import 'package:gis_flutter_frontend/providers/user_provider.dart';
+import 'package:gis_flutter_frontend/services/geo_location_service.dart';
 import 'package:gis_flutter_frontend/utils/app_shared_preferences.dart';
 import 'package:gis_flutter_frontend/utils/global_context_service.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -21,6 +23,8 @@ void main() async {
   // currentPosition = await Geolocator.getCurrentPosition(
   //   desiredAccuracy: LocationAccuracy.high,
   // );
+
+  await GeoLocationService.determinePosition();
 
   await AppSharedPreferences.sharedPrefInit();
 
@@ -39,6 +43,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<AuthProvider>(create: (_) => AuthProvider()),
         ChangeNotifierProvider<UserProvider>(create: (_) => UserProvider()),
         ChangeNotifierProvider<LandProvider>(create: (_) => LandProvider()),
+        ChangeNotifierProvider<DrawerProvider>(create: (_) => DrawerProvider()),
       ],
       child: MaterialApp(
         navigatorKey: GlobalContextService.globalContext,
