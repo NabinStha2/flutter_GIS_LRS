@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:gis_flutter_frontend/core/routing/route_name.dart';
 import 'package:gis_flutter_frontend/screens/add_land.dart';
 import 'package:gis_flutter_frontend/screens/dashboard_page.dart';
+import 'package:gis_flutter_frontend/screens/land_sale_details_screen.dart';
 import 'package:gis_flutter_frontend/screens/land_screen.dart';
 import 'package:gis_flutter_frontend/screens/login_page.dart';
 import 'package:gis_flutter_frontend/screens/map_page.dart';
 import 'package:gis_flutter_frontend/screens/search_land.dart';
+import 'package:gis_flutter_frontend/screens/search_land_sale_screen.dart';
 
 import '../../screens/edit_profile_page.dart';
+import '../../screens/land_details_screen.dart';
+import '../../screens/land_sale_screen.dart';
 
 class RouteGenerator {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
@@ -37,6 +41,18 @@ class RouteGenerator {
 
       case RouteName.searchLandRouteName:
         return MaterialPageRoute(builder: (_) => const SearchLandScreen());
+
+      case RouteName.landDetailsRouteName:
+        return MaterialPageRoute(builder: (_) => const LandDetailsScreen());
+
+      case RouteName.landSaleRouteName:
+        return MaterialPageRoute(builder: (_) => const LandSaleScreen());
+
+      case RouteName.searchLandSaleRouteName:
+        return MaterialPageRoute(builder: (_) => const SearchLandSaleScreen());
+
+      case RouteName.landSaleDetailsRouteName:
+        return MaterialPageRoute(builder: (_) => const LandSaleDetailsScreen());
     }
     return null;
   }

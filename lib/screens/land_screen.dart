@@ -104,6 +104,8 @@ class _LandScreenState extends State<LandScreen> {
                                         ));
                                   },
                                   child: SingleChildScrollView(
+                                    key: const PageStorageKey<String>(
+                                        "landScreen"),
                                     physics:
                                         const AlwaysScrollableScrollPhysics(
                                             parent: BouncingScrollPhysics()),
@@ -125,6 +127,14 @@ class _LandScreenState extends State<LandScreen> {
                                                   landResult:
                                                       _.paginatedOwnedLandResult?[
                                                           index],
+                                                  saleData: _
+                                                      .paginatedOwnedLandResult?[
+                                                          index]
+                                                      .saleData,
+                                                  landId: _
+                                                      .paginatedOwnedLandResult?[
+                                                          index]
+                                                      .id,
                                                 ),
                                                 Positioned(
                                                   top: 0,

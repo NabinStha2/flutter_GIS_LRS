@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:gis_flutter_frontend/core/development/console.dart';
 import 'package:gis_flutter_frontend/core/routing/route_navigation.dart';
 import 'package:gis_flutter_frontend/providers/auth_provider.dart';
 import 'package:gis_flutter_frontend/widgets/custom_text.dart';
@@ -24,7 +23,6 @@ class DrawerWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer<DrawerProvider>(
       builder: (BuildContext context, _, Widget? child) {
-        logger(_.drawerSelectedIndex);
         return Drawer(
           elevation: 0.0,
           width: appWidth(context) * 0.8,
@@ -126,7 +124,7 @@ class DrawerWidget extends StatelessWidget {
                       _.drawerSelectedIndex == 2 ? Colors.white : Colors.black,
                 ),
                 title: CustomText.ourText(
-                  'Land',
+                  'Owned Land',
                   fontSize: 14,
                   fontWeight: FontWeight.w500,
                   color:
@@ -159,6 +157,55 @@ class DrawerWidget extends StatelessWidget {
                 onTap: () {
                   _.changeDrawerSelectedIndex(3);
                   navigateOffAllNamed(context, RouteName.searchLandRouteName);
+                },
+              ),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                tileColor: _.drawerSelectedIndex == 4
+                    ? AppColors.kPrimaryColor2
+                    : null,
+                leading: Icon(
+                  Icons.search,
+                  color:
+                      _.drawerSelectedIndex == 4 ? Colors.white : Colors.black,
+                ),
+                title: CustomText.ourText(
+                  'Owned Land Sale',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color:
+                      _.drawerSelectedIndex == 4 ? Colors.white : Colors.black,
+                ),
+                onTap: () {
+                  _.changeDrawerSelectedIndex(4);
+                  navigateOffAllNamed(context, RouteName.landSaleRouteName);
+                },
+              ),
+              ListTile(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                tileColor: _.drawerSelectedIndex == 5
+                    ? AppColors.kPrimaryColor2
+                    : null,
+                leading: Icon(
+                  Icons.search,
+                  color:
+                      _.drawerSelectedIndex == 5 ? Colors.white : Colors.black,
+                ),
+                title: CustomText.ourText(
+                  'Search Land Sale',
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500,
+                  color:
+                      _.drawerSelectedIndex == 5 ? Colors.white : Colors.black,
+                ),
+                onTap: () {
+                  _.changeDrawerSelectedIndex(5);
+                  navigateOffAllNamed(
+                      context, RouteName.searchLandSaleRouteName);
                 },
               ),
               ListTile(

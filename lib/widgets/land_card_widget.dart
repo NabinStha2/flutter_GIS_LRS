@@ -1,21 +1,32 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
+
 import 'package:gis_flutter_frontend/core/routing/route_navigation.dart';
 import 'package:gis_flutter_frontend/screens/map_page.dart';
 import 'package:gis_flutter_frontend/utils/custom_toasts.dart';
-import 'package:latlong2/latlong.dart';
 
 import '../core/app/colors.dart';
 import '../core/app/dimensions.dart';
 import '../model/land_response_model.dart';
+import '../screens/land_details_screen.dart';
+import '../screens/land_sale_details_screen.dart';
 import 'custom_button.dart';
 import 'custom_network_image_widget.dart';
 
 class LandCardWidget extends StatelessWidget {
   LandResult? landResult;
+  final bool? isFromLandSale;
+  final String? saleData;
+  final String? landSaleId;
+  final String? landId;
   LandCardWidget({
     Key? key,
     this.landResult,
+    this.isFromLandSale = false,
+    this.saleData,
+    this.landSaleId,
+    this.landId,
   }) : super(key: key);
 
   @override
@@ -140,7 +151,9 @@ class LandCardWidget extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                        text: landResult?.isVerified,
+                        text: isFromLandSale ?? false
+                            ? saleData
+                            : landResult?.isVerified,
                         style: TextStyle(
                           color: AppColors.kHeadingColor,
                           fontWeight: FontWeight.w400,
@@ -152,7 +165,19 @@ class LandCardWidget extends StatelessWidget {
                 vSizedBox1,
                 CustomButton.elevatedButton(
                   "View Details",
-                  () {},
+                  () {
+                    isFromLandSale ?? false
+                        ? navigate(
+                            context,
+                            LandSaleDetailsScreen(
+                              landSaleId: landSaleId,
+                            ))
+                        : navigate(
+                            context,
+                            LandDetailsScreen(
+                              landId: landId,
+                            ));
+                  },
                 ),
               ],
             ),

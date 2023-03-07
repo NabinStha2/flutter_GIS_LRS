@@ -2,6 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:gis_flutter_frontend/core/routing/route_name.dart';
+import 'package:gis_flutter_frontend/providers/drawer_provider.dart';
+import 'package:provider/provider.dart';
 
 import '../core/app/enums.dart';
 import '../core/config/api_config.dart';
@@ -79,6 +81,8 @@ class AuthProvider extends ChangeNotifier with BaseController {
 
   logout({required BuildContext ctx}) {
     AppSharedPreferences.clearCrendentials();
+    Provider.of<DrawerProvider>(ctx, listen: false)
+        .changeDrawerSelectedIndex(0);
     navigateOffAllNamed(
       ctx,
       RouteName.loginRouteName,

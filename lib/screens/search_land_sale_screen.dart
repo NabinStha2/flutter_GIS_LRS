@@ -13,21 +13,21 @@ import '../widgets/filter_drawer_widget.dart';
 import '../widgets/land_card_widget.dart';
 import 'dashboard_page.dart';
 
-class SearchLandScreen extends StatefulWidget {
-  const SearchLandScreen({super.key});
+class SearchLandSaleScreen extends StatefulWidget {
+  const SearchLandSaleScreen({super.key});
 
   @override
-  State<SearchLandScreen> createState() => _SearchLandScreenState();
+  State<SearchLandSaleScreen> createState() => _SearchLandSaleScreenState();
 }
 
-class _SearchLandScreenState extends State<SearchLandScreen> {
+class _SearchLandSaleScreenState extends State<SearchLandSaleScreen> {
   final GlobalKey<ScaffoldState> _key = GlobalKey();
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      Provider.of<LandProvider>(context, listen: false).getAllSearchLands(
+      Provider.of<LandProvider>(context, listen: false).getSaleLand(
           context: context,
           landRequestModel: LandRequestModel(
             page: 1,
@@ -40,7 +40,7 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
     return Scaffold(
         appBar: AppBar(
           title: CustomText.ourText(
-            "Search Land",
+            "Search Land Sale",
             fontSize: 18,
             fontWeight: FontWeight.w600,
           ),
@@ -52,7 +52,9 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
         drawer: DrawerWidget(
           scKey: scKey,
         ),
-        endDrawer: const FilterDrawerWidget(),
+        endDrawer: const FilterDrawerWidget(
+          isFromLandSale: true,
+        ),
         endDrawerEnableOpenDragGesture: false,
         body: Consumer<LandProvider>(
           builder: (context, _, child) => Padding(
@@ -60,14 +62,14 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
             child: Column(
               children: [
                 CustomTextFormField(
-                  hintText: "Search land by parcel Id...",
+                  hintText: "Search land sale by parcel Id...",
                   controller: _.searchLandController,
                   suffix: const Icon(Icons.search),
                   onlyNumber: true,
                   isFromSearch: true,
                   textInputType: TextInputType.number,
                   onFieldSubmitted: (val) {
-                    _.getAllSearchLands(
+                    _.getSaleLand(
                         context: context,
                         landRequestModel: LandRequestModel(
                           page: 1,
@@ -118,15 +120,14 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                 Expanded(
                   child: _.isLoading
                       ? const CustomCircularProgressIndicatorWidget(
-                          title: "Loading lands...",
+                          title: "Loading land for sale...",
                         )
-                      : _.getAllSearchLandMessage != null
+                      : _.getSaleLandMessage != null
                           ? Center(
-                              child: CustomText.ourText(
-                                  _.getAllSearchLandMessage,
+                              child: CustomText.ourText(_.getSaleLandMessage,
                                   color: Colors.red),
                             )
-                          : _.paginatedAllSearchLandResult?.isEmpty ?? false
+                          : _.paginatedSaleLandResult.isEmpty
                               ? Center(
                                   child: CustomText.ourText(
                                     "Empty",
@@ -138,17 +139,17 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                     if (scrollNotification.metrics.pixels ==
                                             scrollNotification
                                                 .metrics.maxScrollExtent &&
-                                        _.paginatedAllSearchLandResultPageNumber +
+                                        _.paginatedSaleLandResultPageNumber +
                                                 1 <=
-                                            _.paginatedAllSearchLandResultTotalPages) {
-                                      _.getAllSearchLands(
+                                            _.paginatedSaleLandResultTotalPages) {
+                                      _.getSaleLand(
                                         context: context,
                                         landRequestModel: LandRequestModel(
-                                          page:
-                                              _.paginatedAllSearchLandResultPageNumber +
-                                                  1,
                                           search: _.searchLandController.text
                                               .trim(),
+                                          page:
+                                              _.paginatedSaleLandResultPageNumber +
+                                                  1,
                                           city: _.filterCityLandController.text
                                               .trim(),
                                           district: _
@@ -164,8 +165,8 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                   },
                                   child: RefreshIndicator(
                                     onRefresh: () async {
-                                      _.clearPaginatedAllSearchLandValue();
-                                      _.getAllSearchLands(
+                                      _.clearPaginatedSaleLandValue();
+                                      _.getSaleLand(
                                           context: context,
                                           landRequestModel: LandRequestModel(
                                             page: 1,
@@ -188,7 +189,7 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                     },
                                     child: SingleChildScrollView(
                                       key: const PageStorageKey<String>(
-                                          "landSearchScreen"),
+                                          "landSaleSearchScreen"),
                                       physics:
                                           const AlwaysScrollableScrollPhysics(
                                               parent: BouncingScrollPhysics()),
@@ -200,29 +201,29 @@ class _SearchLandScreenState extends State<SearchLandScreen> {
                                                 const NeverScrollableScrollPhysics(),
                                             separatorBuilder:
                                                 (context, index) => vSizedBox2,
-                                            itemCount:
-                                                _.paginatedAllSearchLandResult
-                                                        ?.length ??
-                                                    0,
+                                            itemCount: _
+                                                .paginatedSaleLandResult.length,
                                             itemBuilder: (context, index) {
                                               return LandCardWidget(
-                                                landResult:
-                                                    _.paginatedAllSearchLandResult?[
-                                                        index],
+                                                landResult: _
+                                                    .paginatedSaleLandResult[
+                                                        index]
+                                                    .landId,
                                                 saleData: _
-                                                    .paginatedAllSearchLandResult?[
+                                                    .paginatedSaleLandResult[
                                                         index]
                                                     .saleData,
-                                                landId: _
-                                                    .paginatedAllSearchLandResult?[
+                                                isFromLandSale: true,
+                                                landSaleId: _
+                                                    .paginatedSaleLandResult[
                                                         index]
                                                     .id,
                                               );
                                             },
                                           ),
                                           vSizedBox1,
-                                          _.paginatedAllSearchLandResultPageNumber <
-                                                  _.paginatedAllSearchLandResultTotalPages
+                                          _.paginatedSaleLandResultPageNumber <
+                                                  _.paginatedSaleLandResultTotalPages
                                               ? Container(
                                                   margin: const EdgeInsets
                                                       .symmetric(vertical: 15),

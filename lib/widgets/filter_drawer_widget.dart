@@ -12,12 +12,10 @@ import 'custom_text.dart';
 import 'custom_text_form_field.dart';
 
 class FilterDrawerWidget extends StatelessWidget {
-  final String? headCategoryName;
-  final String? subCategoryId;
+  final bool? isFromLandSale;
   const FilterDrawerWidget({
     Key? key,
-    this.headCategoryName,
-    this.subCategoryId,
+    this.isFromLandSale = false,
   }) : super(key: key);
 
   @override
@@ -102,17 +100,30 @@ class FilterDrawerWidget extends StatelessWidget {
                       "Apply",
                       () {
                         unfocusKeyboard(context);
-                        _.getAllSearchLands(
-                            context: context,
-                            landRequestModel: LandRequestModel(
-                              page: 1,
-                              search: _.searchLandController.text.trim(),
-                              city: _.filterCityLandController.text.trim(),
-                              district:
-                                  _.filterDistrictLandController.text.trim(),
-                              province:
-                                  _.filterProvinceLandController.text.trim(),
-                            ));
+                        isFromLandSale ?? false
+                            ? _.getSaleLand(
+                                context: context,
+                                landRequestModel: LandRequestModel(
+                                  search: _.searchLandController.text.trim(),
+                                  page: 1,
+                                  city: _.filterCityLandController.text.trim(),
+                                  district: _.filterDistrictLandController.text
+                                      .trim(),
+                                  province: _.filterProvinceLandController.text
+                                      .trim(),
+                                ),
+                              )
+                            : _.getAllSearchLands(
+                                context: context,
+                                landRequestModel: LandRequestModel(
+                                  page: 1,
+                                  search: _.searchLandController.text.trim(),
+                                  city: _.filterCityLandController.text.trim(),
+                                  district: _.filterDistrictLandController.text
+                                      .trim(),
+                                  province: _.filterProvinceLandController.text
+                                      .trim(),
+                                ));
                         back(context);
                       },
                       borderRadius: 8,

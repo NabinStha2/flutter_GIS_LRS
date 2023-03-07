@@ -10,6 +10,9 @@ import '../core/app/enums.dart';
 import '../core/config/api_config.dart';
 import '../core/development/console.dart';
 import '../core/routing/route_navigation.dart';
+import '../model/land/individual_land_response_model.dart';
+import '../model/land/individual_land_sale_response_model.dart';
+import '../model/land/land_sale_response_model.dart';
 import '../model/land_response_model.dart';
 import '../screens/map_page.dart';
 import '../services/api_exceptions.dart';
@@ -41,6 +44,9 @@ class LandProvider extends ChangeNotifier with BaseController {
   TextEditingController filterDistrictLandController = TextEditingController();
   TextEditingController filterProvinceLandController = TextEditingController();
 
+  IndividualLandData? individualLandResult = IndividualLandData();
+  String? getIndividualLandMessage;
+
   List<LandResult>? paginatedOwnedLandResult = <LandResult>[];
   int paginatedOwnedLandResultPageNumber = 0;
   int paginatedOwnedLandResultCount = 0;
@@ -52,6 +58,21 @@ class LandProvider extends ChangeNotifier with BaseController {
   int paginatedAllSearchLandResultCount = 0;
   int paginatedAllSearchLandResultTotalPages = 0;
   String? getAllSearchLandMessage;
+
+  List<LandSaleResult> paginatedSaleLandResult = <LandSaleResult>[];
+  int paginatedSaleLandResultPageNumber = 0;
+  int paginatedSaleLandResultCount = 0;
+  int paginatedSaleLandResultTotalPages = 0;
+  String? getSaleLandMessage;
+
+  List<LandSaleResult> paginatedOwnedSaleLandResult = <LandSaleResult>[];
+  int paginatedOwnedSaleLandResultPageNumber = 0;
+  int paginatedOwnedSaleLandResultCount = 0;
+  int paginatedOwnedSaleLandResultTotalPages = 0;
+  String? getOwnedSaleLandMessage;
+
+  IndividualLandSaleData? individualSaleLandResult = IndividualLandSaleData();
+  String? getIndividualSaleLandMessage;
 
   addLand(
       {required BuildContext context,
@@ -254,6 +275,406 @@ class LandProvider extends ChangeNotifier with BaseController {
     } on AppException catch (err) {
       logger(err.toString(), loggerType: LoggerType.error);
     } catch (e) {
+      consolelog(e.toString());
+    }
+  }
+
+  getIndividualLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      var response = await BaseClient()
+          .get(
+            ApiConfig.baseUrl,
+            "${ApiConfig.landUrl}${ApiConfig.individualSaleLandsUrl}/${landRequestModel?.landId}",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      var decodedJson = individualLandResponseModelFromJson(response);
+      individualLandResult = decodedJson.data?.landData ?? IndividualLandData();
+
+      isLoading = false;
+      getIndividualLandMessage = null;
+      notifyListeners();
+    } on AppException catch (err) {
+      isLoading = false;
+      getIndividualLandMessage = err.message.toString();
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      getIndividualLandMessage = e.toString();
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+// LAND SALE ---------------------------------------
+
+  addSaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+      CustomDialogs.fullLoadingDialog(
+          data: "Adding Land for sale, Please wait...", context: context);
+      var userId = AppSharedPreferences.getUserId;
+      consolelog(userId);
+      var response = await BaseClient()
+          .post(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}/${landRequestModel?.landId}",
+            {},
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+      isLoading = false;
+      hideLoading(context);
+      successToast(msg: "Land for sale added successfully.");
+      getIndividualLand(
+          context: context,
+          landRequestModel: LandRequestModel(
+            landId: landRequestModel?.landId,
+          ));
+      notifyListeners();
+    } catch (e) {
+      logger(e.toString(), loggerType: LoggerType.error);
+    }
+  }
+
+  clearPaginatedSaleLandValue() {
+    paginatedSaleLandResult.clear();
+    paginatedSaleLandResultCount = 0;
+    paginatedSaleLandResultPageNumber = 0;
+    paginatedSaleLandResultTotalPages = 0;
+  }
+
+  getSaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+      paginatedSaleLandResultPageNumber = landRequestModel?.page ?? 1;
+      if (landRequestModel?.page == 1) {
+        paginatedSaleLandResultPageNumber = 1;
+        paginatedSaleLandResult.clear();
+        notifyListeners();
+      }
+      var response = await BaseClient()
+          .get(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}${getQuery(landRequestModel, search: landRequestModel?.search)}",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      var decodedJson = landSaleResponseModelFromJson(response);
+      paginatedSaleLandResultCount = decodedJson.data?.landSaleData?.count ?? 0;
+      paginatedSaleLandResultPageNumber =
+          decodedJson.data?.landSaleData?.currentPageNumber ?? 0;
+      paginatedSaleLandResultTotalPages =
+          decodedJson.data?.landSaleData?.totalPages ?? 0;
+      paginatedSaleLandResult
+          .addAll(decodedJson.data?.landSaleData?.results ?? []);
+
+      isLoading = false;
+      getSaleLandMessage = null;
+
+      notifyListeners();
+    } on AppException catch (err) {
+      isLoading = false;
+      getSaleLandMessage = err.message.toString();
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      getSaleLandMessage = e.toString();
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  clearPaginatedOwnedSaleLandValue() {
+    paginatedOwnedSaleLandResult.clear();
+    paginatedOwnedSaleLandResultCount = 0;
+    paginatedOwnedSaleLandResultPageNumber = 0;
+    paginatedOwnedSaleLandResultTotalPages = 0;
+  }
+
+  getOwnedSaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+      paginatedOwnedSaleLandResultPageNumber = landRequestModel?.page ?? 1;
+      if (landRequestModel?.page == 1) {
+        paginatedOwnedSaleLandResultPageNumber = 1;
+        paginatedOwnedSaleLandResult.clear();
+        notifyListeners();
+      }
+      var userId = AppSharedPreferences.getUserId;
+      var response = await BaseClient()
+          .get(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}/$userId${getQuery(landRequestModel, search: landRequestModel?.search)}",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      var decodedJson = landSaleResponseModelFromJson(response);
+      paginatedOwnedSaleLandResultCount =
+          decodedJson.data?.landSaleData?.count ?? 0;
+      paginatedOwnedSaleLandResultPageNumber =
+          decodedJson.data?.landSaleData?.currentPageNumber ?? 0;
+      paginatedOwnedSaleLandResultTotalPages =
+          decodedJson.data?.landSaleData?.totalPages ?? 0;
+      paginatedOwnedSaleLandResult
+          .addAll(decodedJson.data?.landSaleData?.results ?? []);
+
+      isLoading = false;
+      getOwnedSaleLandMessage = null;
+
+      notifyListeners();
+    } on AppException catch (err) {
+      isLoading = false;
+      getOwnedSaleLandMessage = err.message.toString();
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      getOwnedSaleLandMessage = e.toString();
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  getIndividualSaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      var response = await BaseClient()
+          .get(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}${ApiConfig.individualSaleLandsUrl}/${landRequestModel?.landSaleId}",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      var decodedJson = individualLandSaleResponseModelFromJson(response);
+      individualSaleLandResult =
+          decodedJson.data?.landSaleData ?? IndividualLandSaleData();
+      isLoading = false;
+      getIndividualSaleLandMessage = null;
+      notifyListeners();
+    } on AppException catch (err) {
+      isLoading = false;
+      getIndividualSaleLandMessage = err.message.toString();
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      getIndividualSaleLandMessage = e.toString();
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  deleteSaleLand({
+    required BuildContext context,
+    bool? isFromLandSale = true,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+
+      CustomDialogs.fullLoadingDialog(
+          data: "Deleting Land Sale, Please wait...", context: context);
+      var response = await BaseClient()
+          .delete(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}/${landRequestModel?.landSaleId}/${landRequestModel?.landId}",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      hideLoading(context);
+      isLoading = false;
+      notifyListeners();
+      back(context);
+      getOwnedSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+      getSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+    } on AppException catch (err) {
+      isLoading = false;
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  requestToBuySaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+
+      CustomDialogs.fullLoadingDialog(
+          data: "Requesting to buy Land, Please wait...", context: context);
+      var response = await BaseClient()
+          .patch(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}${ApiConfig.requestToBuySaleLandsUrl}/${landRequestModel?.landSaleId}",
+            {},
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      hideLoading(context);
+      isLoading = false;
+      notifyListeners();
+      getIndividualSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(
+          landSaleId: landRequestModel?.landSaleId,
+        ),
+      );
+      getOwnedSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+      getSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+    } on AppException catch (err) {
+      isLoading = false;
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  acceptToBuySaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+    String? acceptedUserId,
+  }) async {
+    try {
+      isLoading = true;
+
+      CustomDialogs.fullLoadingDialog(
+          data: "Accepting buy Land, Please wait...", context: context);
+      var response = await BaseClient()
+          .patch(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}/${landRequestModel?.landSaleId}${ApiConfig.acceptToBuySaleLandsUrl}/$acceptedUserId",
+            {},
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      hideLoading(context);
+      isLoading = false;
+      notifyListeners();
+      getIndividualSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(
+          landSaleId: landRequestModel?.landSaleId,
+        ),
+      );
+      getOwnedSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+      getSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+    } on AppException catch (err) {
+      isLoading = false;
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
+
+  rejectToBuySaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+    String? rejectedUserId,
+  }) async {
+    try {
+      isLoading = true;
+
+      CustomDialogs.fullLoadingDialog(
+          data: "Rejecting buy Land, Please wait...", context: context);
+      var response = await BaseClient()
+          .patch(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}/${landRequestModel?.landSaleId}${ApiConfig.rejectToBuySaleLandsUrl}/$rejectedUserId",
+            {},
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      hideLoading(context);
+      isLoading = false;
+      notifyListeners();
+      getIndividualSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(
+          landSaleId: landRequestModel?.landSaleId,
+        ),
+      );
+      getOwnedSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+      getSaleLand(
+        context: context,
+        landRequestModel: LandRequestModel(page: 1),
+      );
+    } on AppException catch (err) {
+      isLoading = false;
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      notifyListeners();
       consolelog(e.toString());
     }
   }

@@ -16,4 +16,9 @@ class ApiConfig {
   static const String landUrl = "/land";
   static const String addLandUrl = "/add-land";
   static const String userLandsUrl = "/user-lands";
+  static const String saleLandsUrl = "/land-sale";
+  static const String individualSaleLandsUrl = "/individual";
+  static const String requestToBuySaleLandsUrl = "/request-land-buy";
+  static const String acceptToBuySaleLandsUrl = "/approve-land-buyer";
+  static const String rejectToBuySaleLandsUrl = "/reject-land-buyer";
 }

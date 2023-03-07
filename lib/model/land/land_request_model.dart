@@ -7,6 +7,7 @@ class LandRequestModel {
   String? district;
   String? province;
   String? landId;
+  String? landSaleId;
   LandRequestModel({
     this.page,
     this.limit,
@@ -15,6 +16,7 @@ class LandRequestModel {
     this.district,
     this.province,
     this.landId,
+    this.landSaleId,
   });
 
   Map<String, dynamic> toJson() => {
