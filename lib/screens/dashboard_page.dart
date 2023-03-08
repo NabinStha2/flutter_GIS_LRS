@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:gis_flutter_frontend/core/routing/route_name.dart';
 import 'package:gis_flutter_frontend/core/routing/route_navigation.dart';
+import 'package:gis_flutter_frontend/providers/land_provider.dart';
 import 'package:gis_flutter_frontend/providers/user_provider.dart';
 import 'package:gis_flutter_frontend/widgets/custom_circular_progress_indicator.dart';
 import 'package:provider/provider.dart';
 
+import '../core/app/colors.dart';
 import '../core/app/dimensions.dart';
+import '../model/land/land_request_model.dart';
 import '../widgets/custom_button.dart';
 import '../widgets/custom_network_image_widget.dart';
 import '../widgets/custom_text.dart';
 import '../widgets/drawer_widget.dart';
+import '../widgets/land_card_widget.dart';
 
 GlobalKey<ScaffoldState> scKey = GlobalKey<ScaffoldState>();
 
@@ -24,8 +28,11 @@ class _DashboardPageState extends State<DashboardPage> {
   @override
   void initState() {
     super.initState();
-
-    Provider.of<UserProvider>(context, listen: false).getUser(ctx: context);
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      Provider.of<UserProvider>(context, listen: false).getUser(ctx: context);
+      Provider.of<LandProvider>(context, listen: false).ownedRequestedSaleLand(
+          context: context, landRequestModel: LandRequestModel(page: 1));
+    });
   }
 
   @override
@@ -44,8 +51,8 @@ class _DashboardPageState extends State<DashboardPage> {
       drawer: DrawerWidget(
         scKey: scKey,
       ),
-      body: Consumer<UserProvider>(
-        builder: (context, _, child) => _.isLoading
+      body: Consumer2<UserProvider, LandProvider>(
+        builder: (context, _, __, child) => _.isLoading
             ? const CustomCircularProgressIndicatorWidget(
                 title: "Loading user profile...",
               )
@@ -147,7 +154,137 @@ class _DashboardPageState extends State<DashboardPage> {
                           ),
                         ],
                       ),
-                    )
+                    ),
+                    vSizedBox2,
+                    CustomText.ourText(
+                      "Land Requested To Buy Information",
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.kPrimaryColor2,
+                    ),
+                    vSizedBox1,
+                    Container(
+                      constraints: const BoxConstraints(
+                        maxHeight: 350,
+                      ),
+                      child: __.isLoading
+                          ? const CustomCircularProgressIndicatorWidget(
+                              title: "Loading requested land to buy...",
+                            )
+                          : __.getOwnedSaleLandMessage != null
+                              ? Center(
+                                  child: CustomText.ourText(
+                                      __.getOwnedSaleLandMessage,
+                                      color: Colors.red),
+                                )
+                              : __.paginatedOwnedSaleLandResult.isEmpty
+                                  ? Center(
+                                      child: CustomText.ourText(
+                                        "Empty",
+                                      ),
+                                    )
+                                  : NotificationListener<
+                                      ScrollUpdateNotification>(
+                                      onNotification: (ScrollUpdateNotification
+                                          scrollNotification) {
+                                        if (scrollNotification.metrics.pixels ==
+                                                scrollNotification
+                                                    .metrics.maxScrollExtent &&
+                                            __.paginatedOwnedSaleLandResultPageNumber +
+                                                    1 <=
+                                                __.paginatedOwnedSaleLandResultTotalPages) {
+                                          __.ownedRequestedSaleLand(
+                                            context: context,
+                                            landRequestModel: LandRequestModel(
+                                              page:
+                                                  __.paginatedOwnedSaleLandResultPageNumber +
+                                                      1,
+                                            ),
+                                          );
+                                        }
+                                        return true;
+                                      },
+                                      child: RefreshIndicator(
+                                        onRefresh: () async {
+                                          __.clearPaginatedOwnedSaleLandValue();
+                                          __.ownedRequestedSaleLand(
+                                              context: context,
+                                              landRequestModel:
+                                                  LandRequestModel(
+                                                page: 1,
+                                              ));
+                                          await Future.delayed(
+                                              const Duration(seconds: 1),
+                                              () {});
+                                        },
+                                        child: SingleChildScrollView(
+                                          key: const PageStorageKey<String>(
+                                              "landSaleSearchScreen"),
+                                          physics:
+                                              const AlwaysScrollableScrollPhysics(
+                                                  parent:
+                                                      BouncingScrollPhysics()),
+                                          child: Column(
+                                            children: [
+                                              ListView.separated(
+                                                shrinkWrap: true,
+                                                physics:
+                                                    const NeverScrollableScrollPhysics(),
+                                                separatorBuilder:
+                                                    (context, index) =>
+                                                        vSizedBox2,
+                                                itemCount: __
+                                                    .paginatedOwnedSaleLandResult
+                                                    .length,
+                                                itemBuilder: (context, index) {
+                                                  return LandCardWidget(
+                                                    landData: __
+                                                        .paginatedOwnedSaleLandResult[
+                                                            index]
+                                                        .landId,
+                                                    saleData: __
+                                                        .paginatedOwnedSaleLandResult[
+                                                            index]
+                                                        .saleData,
+                                                    isFromLandSale: true,
+                                                    landSaleId: __
+                                                        .paginatedOwnedSaleLandResult[
+                                                            index]
+                                                        .id,
+                                                  );
+                                                },
+                                              ),
+                                              vSizedBox1,
+                                              __.paginatedOwnedSaleLandResultPageNumber <
+                                                      __.paginatedOwnedSaleLandResultTotalPages
+                                                  ? Container(
+                                                      margin: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 15),
+                                                      child:
+                                                          const CustomCircularProgressIndicatorWidget(
+                                                        title:
+                                                            "Loading Requested Land, Please wait...",
+                                                      ),
+                                                    )
+                                                  : Container(
+                                                      margin: const EdgeInsets
+                                                              .symmetric(
+                                                          vertical: 15),
+                                                      child: CustomText.ourText(
+                                                        "No more Requested Land to Load.",
+                                                        fontSize: 14.0,
+                                                        fontWeight:
+                                                            FontWeight.w400,
+                                                      ),
+                                                    ),
+                                              vSizedBox2,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                    ),
                   ],
                 ),
               ),

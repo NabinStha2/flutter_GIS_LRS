@@ -56,6 +56,7 @@ class IndividualLandSaleData {
     this.rejectedUserId,
     this.v,
     this.approvedUserId,
+    this.prevOwnerUserId,
   });
 
   String? id;
@@ -66,6 +67,7 @@ class IndividualLandSaleData {
   UserId? approvedUserId;
   List<UserId>? requestedUserId;
   List<UserId>? rejectedUserId;
+  UserId? prevOwnerUserId;
   int? v;
 
   factory IndividualLandSaleData.fromJson(Map<String, dynamic> json) =>
@@ -89,6 +91,9 @@ class IndividualLandSaleData {
             : List<UserId>.from(
                 json["rejectedUserId"]!.map((x) => UserId.fromJson(x))),
         v: json["__v"],
+        prevOwnerUserId: json["prevOwnerUserId"] == null
+            ? null
+            : UserId.fromJson(json["prevOwnerUserId"]),
       );
 
   Map<String, dynamic> toJson() => {

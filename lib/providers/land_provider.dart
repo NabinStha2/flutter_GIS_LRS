@@ -678,4 +678,54 @@ class LandProvider extends ChangeNotifier with BaseController {
       consolelog(e.toString());
     }
   }
+
+  ownedRequestedSaleLand({
+    required BuildContext context,
+    LandRequestModel? landRequestModel,
+  }) async {
+    try {
+      isLoading = true;
+
+      paginatedOwnedSaleLandResultPageNumber = landRequestModel?.page ?? 1;
+      if (landRequestModel?.page == 1) {
+        paginatedOwnedSaleLandResultPageNumber = 1;
+        paginatedOwnedSaleLandResult.clear();
+        notifyListeners();
+      }
+
+      var userId = AppSharedPreferences.getUserId;
+      var response = await BaseClient()
+          .get(
+            ApiConfig.baseUrl,
+            "${ApiConfig.saleLandsUrl}${ApiConfig.ownedRequestedSaleLandsUrl}/$userId",
+            hasTokenHeader: true,
+          )
+          .catchError(handleError);
+      if (response == null) return false;
+
+      var decodedJson = landSaleResponseModelFromJson(response);
+      paginatedOwnedSaleLandResultCount =
+          decodedJson.data?.landSaleData?.count ?? 0;
+      paginatedOwnedSaleLandResultPageNumber =
+          decodedJson.data?.landSaleData?.currentPageNumber ?? 0;
+      paginatedOwnedSaleLandResultTotalPages =
+          decodedJson.data?.landSaleData?.totalPages ?? 0;
+      paginatedOwnedSaleLandResult
+          .addAll(decodedJson.data?.landSaleData?.results ?? []);
+      isLoading = false;
+      getOwnedSaleLandMessage = null;
+
+      notifyListeners();
+    } on AppException catch (err) {
+      isLoading = false;
+      getOwnedSaleLandMessage = err.message.toString();
+      logger(err.toString(), loggerType: LoggerType.error);
+      notifyListeners();
+    } catch (e) {
+      isLoading = false;
+      getOwnedSaleLandMessage = e.toString();
+      notifyListeners();
+      consolelog(e.toString());
+    }
+  }
 }

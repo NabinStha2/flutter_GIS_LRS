@@ -8,6 +8,7 @@ import 'package:gis_flutter_frontend/utils/custom_toasts.dart';
 
 import '../core/app/colors.dart';
 import '../core/app/dimensions.dart';
+import '../model/land/individual_land_sale_response_model.dart';
 import '../model/land_response_model.dart';
 import '../screens/land_details_screen.dart';
 import '../screens/land_sale_details_screen.dart';
@@ -16,6 +17,7 @@ import 'custom_network_image_widget.dart';
 
 class LandCardWidget extends StatelessWidget {
   LandResult? landResult;
+  LandId? landData;
   final bool? isFromLandSale;
   final String? saleData;
   final String? landSaleId;
@@ -23,6 +25,7 @@ class LandCardWidget extends StatelessWidget {
   LandCardWidget({
     Key? key,
     this.landResult,
+    this.landData,
     this.isFromLandSale = false,
     this.saleData,
     this.landSaleId,
@@ -52,19 +55,36 @@ class LandCardWidget extends StatelessWidget {
               CustomButton.elevatedButton(
                 "See on map",
                 () {
-                  landResult?.polygon?.isNotEmpty ?? false
-                      ? navigate(
-                          context,
-                          MapPage(
-                            isFromLand: true,
-                            latlngData: LatLng(
-                                double.parse(
-                                    landResult?.polygon?[0].latitude ?? "0"),
-                                double.parse(
-                                    landResult?.polygon?[0].longitude ?? "0")),
-                          ),
-                        )
-                      : errorToast(msg: "Polygon not available");
+                  isFromLandSale ?? false
+                      ? landData?.polygon?.isNotEmpty ?? false
+                          ? navigate(
+                              context,
+                              MapPage(
+                                isFromLand: true,
+                                latlngData: LatLng(
+                                    double.parse(
+                                        landData?.polygon?[0].latitude ?? "0"),
+                                    double.parse(
+                                        landData?.polygon?[0].longitude ??
+                                            "0")),
+                              ),
+                            )
+                          : errorToast(msg: "Polygon not available")
+                      : landResult?.polygon?.isNotEmpty ?? false
+                          ? navigate(
+                              context,
+                              MapPage(
+                                isFromLand: true,
+                                latlngData: LatLng(
+                                    double.parse(
+                                        landResult?.polygon?[0].latitude ??
+                                            "0"),
+                                    double.parse(
+                                        landResult?.polygon?[0].longitude ??
+                                            "0")),
+                              ),
+                            )
+                          : errorToast(msg: "Polygon not available");
                 },
               ),
             ],
@@ -84,7 +104,9 @@ class LandCardWidget extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                        text: landResult?.id,
+                        text: isFromLandSale ?? false
+                            ? landData?.id
+                            : landResult?.id,
                         style: TextStyle(
                           color: AppColors.kHeadingColor,
                           fontWeight: FontWeight.w400,
@@ -104,7 +126,9 @@ class LandCardWidget extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                        text: landResult?.parcelId,
+                        text: isFromLandSale ?? false
+                            ? landData?.parcelId
+                            : landResult?.parcelId,
                         style: TextStyle(
                           color: AppColors.kHeadingColor,
                           fontWeight: FontWeight.w400,
@@ -131,7 +155,9 @@ class LandCardWidget extends StatelessWidget {
                     ),
                     children: [
                       TextSpan(
-                        text: landResult?.landPrice,
+                        text: isFromLandSale ?? false
+                            ? landData?.landPrice
+                            : landResult?.landPrice,
                         style: TextStyle(
                           color: AppColors.kHeadingColor,
                           fontWeight: FontWeight.w400,

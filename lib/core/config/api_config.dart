@@ -21,4 +21,5 @@ class ApiConfig {
   static const String requestToBuySaleLandsUrl = "/request-land-buy";
   static const String acceptToBuySaleLandsUrl = "/approve-land-buyer";
   static const String rejectToBuySaleLandsUrl = "/reject-land-buyer";
+  static const String ownedRequestedSaleLandsUrl = "/requested";
 }

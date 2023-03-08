@@ -205,7 +205,7 @@ class _SearchLandSaleScreenState extends State<SearchLandSaleScreen> {
                                                 .paginatedSaleLandResult.length,
                                             itemBuilder: (context, index) {
                                               return LandCardWidget(
-                                                landResult: _
+                                                landData: _
                                                     .paginatedSaleLandResult[
                                                         index]
                                                     .landId,

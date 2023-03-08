@@ -4,7 +4,7 @@
 
 import 'dart:convert';
 
-import '../land_response_model.dart';
+import 'individual_land_sale_response_model.dart';
 
 LandSaleResponseModel landSaleResponseModelFromJson(String str) =>
     LandSaleResponseModel.fromJson(json.decode(str));
@@ -98,32 +98,39 @@ class LandSaleResult {
   });
 
   String? id;
-  LandResult? landId;
+  LandId? landId;
   String? parcelId;
-  String? ownerUserId;
+  UserId? ownerUserId;
   String? saleData;
-  List<dynamic>? requestedUserId;
-  List<dynamic>? rejectedUserId;
+  List<UserId>? requestedUserId;
+  List<UserId>? rejectedUserId;
   int? v;
-  String? approvedUserId;
-  String? prevOwnerUserId;
+  UserId? approvedUserId;
+  UserId? prevOwnerUserId;
 
   factory LandSaleResult.fromJson(Map<String, dynamic> json) => LandSaleResult(
         id: json["_id"],
-        landId:
-            json["landId"] == null ? null : LandResult.fromJson(json["landId"]),
+        landId: json["landId"] == null ? null : LandId.fromJson(json["landId"]),
         parcelId: json["parcelId"],
-        ownerUserId: json["ownerUserId"],
+        ownerUserId: json["ownerUserId"] == null
+            ? null
+            : UserId.fromJson(json["ownerUserId"]),
         saleData: json["saleData"],
         requestedUserId: json["requestedUserId"] == null
             ? []
-            : List<dynamic>.from(json["requestedUserId"]!.map((x) => x)),
+            : List<UserId>.from(
+                json["requestedUserId"]!.map((x) => UserId.fromJson(x))),
         rejectedUserId: json["rejectedUserId"] == null
             ? []
-            : List<dynamic>.from(json["rejectedUserId"]!.map((x) => x)),
+            : List<UserId>.from(
+                json["rejectedUserId"]!.map((x) => UserId.fromJson(x))),
         v: json["__v"],
-        approvedUserId: json["approvedUserId"],
-        prevOwnerUserId: json["prevOwnerUserId"],
+        approvedUserId: json["approvedUserId"] == null
+            ? null
+            : UserId.fromJson(json["approvedUserId"]),
+        prevOwnerUserId: json["prevOwnerUserId"] == null
+            ? null
+            : UserId.fromJson(json["prevOwnerUserId"]),
       );
 
   Map<String, dynamic> toJson() => {
